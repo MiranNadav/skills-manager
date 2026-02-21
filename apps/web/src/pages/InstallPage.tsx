@@ -83,7 +83,9 @@ export default function InstallPage() {
             {loading === "search" ? "searching..." : "search"}
           </button>
         </div>
-        {searchResult && <TerminalOutput result={searchResult} />}
+        {searchResult && (
+          <SearchOutput result={searchResult} onSelectPackage={setInstallPkg} />
+        )}
       </section>
 
       {/* Install */}
@@ -130,6 +132,62 @@ export default function InstallPage() {
         </div>
         {updateResult && <TerminalOutput result={updateResult} />}
       </section>
+    </div>
+  );
+}
+
+// Matches package refs like owner/repo@skill-name at the start of a line
+const PKG_RE = /^([a-zA-Z0-9_-]+\/[a-zA-Z0-9_.-]+@[a-zA-Z0-9_.-]+)/;
+
+function SearchOutput({
+  result,
+  onSelectPackage,
+}: {
+  result: CliResult;
+  onSelectPackage: (pkg: string) => void;
+}) {
+  const text = result.stdout || result.stderr || "(no output)";
+  const lines = text.split("\n");
+
+  return (
+    <div style={styles.terminal}>
+      <div style={styles.terminalStatus}>
+        <span
+          style={{
+            color: result.success ? "var(--success)" : "var(--error)",
+            fontFamily: "var(--font-mono)",
+            fontSize: "10px",
+            letterSpacing: "0.05em",
+          }}
+        >
+          {result.success ? "✓ success" : "✗ failed"}
+        </span>
+      </div>
+      <div style={styles.terminalText}>
+        {lines.map((line, i) => {
+          const match = line.match(PKG_RE);
+          if (match) {
+            const pkg = match[1];
+            return (
+              <div key={i}>
+                <div>{line}</div>
+                <div style={styles.installRow}>
+                  <span style={styles.installPrompt}>▸</span>
+                  <code style={styles.installCmd}>npx skills add {pkg}</code>
+                  <button
+                    style={styles.installUseBtn}
+                    onClick={() => onSelectPackage(pkg)}
+                    title="Load into install input"
+                  >
+                    use
+                  </button>
+                </div>
+              </div>
+            );
+          }
+          return <div key={i}>{line || "\u00a0"}</div>;
+        })}
+      </div>
     </div>
   );
 }
@@ -227,8 +285,39 @@ const styles = {
     lineHeight: 1.6,
     whiteSpace: "pre-wrap" as const,
     wordBreak: "break-all" as const,
-    maxHeight: "300px",
+    maxHeight: "400px",
     overflow: "auto",
     margin: 0,
+  },
+  installRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    marginTop: "4px",
+    marginBottom: "8px",
+    paddingLeft: "8px",
+  },
+  installPrompt: {
+    color: "var(--accent)",
+    fontSize: "11px",
+    flexShrink: 0,
+  },
+  installCmd: {
+    color: "var(--accent)",
+    fontSize: "11px",
+    fontFamily: "var(--font-mono)",
+    letterSpacing: "0.02em",
+    flexGrow: 1,
+  },
+  installUseBtn: {
+    fontFamily: "var(--font-mono)",
+    fontSize: "10px",
+    padding: "2px 8px",
+    border: "1px solid var(--accent)",
+    color: "var(--accent)",
+    background: "transparent",
+    cursor: "pointer",
+    flexShrink: 0,
+    letterSpacing: "0.05em",
   },
 };

@@ -11,6 +11,10 @@ const execFileAsync = promisify(execFile);
 /** Safe character set for skill package references */
 const SAFE_PACKAGE_REF = /^[a-zA-Z0-9\-_./@:]+$/;
 
+/** Strip ANSI escape codes from CLI output */
+const stripAnsi = (str: string): string =>
+  str.replace(/[\x1B\x9B][[\]()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><~]/g, "");
+
 export interface CliResult {
   stdout: string;
   stderr: string;
@@ -65,13 +69,13 @@ export class CliService {
           timeout: 90_000,
         },
       );
-      return { stdout, stderr, success: true };
+      return { stdout: stripAnsi(stdout), stderr: stripAnsi(stderr), success: true };
     } catch (err) {
       const error = err as { stdout?: string; stderr?: string; message?: string };
       this.logger.warn("Skills CLI command failed", { args, error: error.message });
       return {
-        stdout: error.stdout ?? "",
-        stderr: error.stderr ?? error.message ?? "Unknown error",
+        stdout: stripAnsi(error.stdout ?? ""),
+        stderr: stripAnsi(error.stderr ?? error.message ?? "Unknown error"),
         success: false,
       };
     }
