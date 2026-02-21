@@ -99,52 +99,130 @@ export default function SkillPage() {
         {skill.hasAgentsMd && <MetaItem label="AGENTS.md" value="present" />}
       </div>
 
-
       {/* Usage */}
-      <UsageSection usage={usage} />
+      {usage && usage.count > 0 && (
+        <CollapsibleSection
+          title="USAGE"
+          badge={`${usage.count} ${usage.count === 1 ? "use" : "uses"}`}
+          defaultOpen={false}
+        >
+          <UsageContent usage={usage} />
+        </CollapsibleSection>
+      )}
 
       {/* Content */}
-      <div style={styles.section}>
-        <div style={styles.sectionTitle}>SKILL.md</div>
+      <CollapsibleSection
+        title="SKILL.md"
+        defaultOpen={true}
+        actions={
+          !editMode ? (
+            <button style={styles.btnSmall} onClick={startEdit}>
+              edit
+            </button>
+          ) : undefined
+        }
+      >
         {editMode ? (
-          <textarea
-            value={editContent}
-            onChange={(e) => setEditContent(e.target.value)}
-            style={styles.editor}
-          />
+          <>
+            <div style={styles.editorActions}>
+              <button
+                style={styles.btnSmall}
+                onClick={saveEdit}
+                disabled={saveMutation.isPending}
+              >
+                {saveMutation.isPending ? "saving..." : "save"}
+              </button>
+              <button style={styles.btnSmall} onClick={() => setEditMode(false)}>
+                cancel
+              </button>
+            </div>
+            <textarea
+              value={editContent}
+              onChange={(e) => setEditContent(e.target.value)}
+              style={styles.editor}
+            />
+          </>
         ) : (
-          <div style={styles.markdown}>
+          <div className="markdown-body">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {skill.content || "*No content*"}
             </ReactMarkdown>
           </div>
         )}
-      </div>
+      </CollapsibleSection>
 
       {/* Rules */}
       {skill.rules.length > 0 && (
-        <div style={styles.section}>
-          <div style={styles.sectionTitle}>RULES ({skill.rules.length})</div>
-          {skill.rules.map((rule) => (
-            <RuleItem key={rule.filename} rule={rule} slug={slug ?? ""} />
-          ))}
-        </div>
+        <CollapsibleSection
+          title="RULES"
+          badge={String(skill.rules.length)}
+          defaultOpen={true}
+        >
+          <div style={styles.ruleList}>
+            {skill.rules.map((rule) => (
+              <RuleItem key={rule.filename} rule={rule} slug={slug ?? ""} />
+            ))}
+          </div>
+        </CollapsibleSection>
       )}
 
       {/* Reference files */}
       {skill.referenceFiles.length > 0 && (
-        <div style={styles.section}>
-          <div style={styles.sectionTitle}>REFERENCES</div>
+        <CollapsibleSection
+          title="REFERENCES"
+          badge={String(skill.referenceFiles.length)}
+          defaultOpen={false}
+        >
           <div style={styles.refList}>
             {skill.referenceFiles.map((f) => (
               <span key={f} style={styles.refFile}>{f}</span>
             ))}
           </div>
-        </div>
+        </CollapsibleSection>
       )}
     </div>
   );
 }
+
+// ── Shared collapsible section ────────────────────────────────────
+
+function CollapsibleSection({
+  title,
+  badge,
+  defaultOpen,
+  actions,
+  children,
+}: {
+  title: string;
+  badge?: string;
+  defaultOpen: boolean;
+  actions?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  return (
+    <div style={styles.collapsible}>
+      <div style={styles.collapsibleHeader} onClick={() => setOpen((o) => !o)}>
+        <span style={styles.colToggle}>{open ? "▾" : "▸"}</span>
+        <span style={styles.colTitle}>{title}</span>
+        {badge && <span style={styles.colBadge}>{badge}</span>}
+        <div style={styles.colSpacer} />
+        {actions && (
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={styles.colActions}
+          >
+            {actions}
+          </div>
+        )}
+      </div>
+      {open && <div style={styles.collapsibleBody}>{children}</div>}
+    </div>
+  );
+}
+
+// ── Rule item ─────────────────────────────────────────────────────
 
 function RuleItem({ rule, slug }: { rule: SkillRule; slug: string }) {
   const [open, setOpen] = useState(false);
@@ -167,12 +245,7 @@ function RuleItem({ rule, slug }: { rule: SkillRule; slug: string }) {
         <span style={styles.ruleFilename}>{rule.filename}</span>
         <span style={styles.ruleTitle}>{title !== rule.filename ? title : ""}</span>
         {impact && (
-          <span
-            style={{
-              ...styles.ruleImpact,
-              color: impactColor(impact),
-            }}
-          >
+          <span style={{ ...styles.ruleImpact, color: impactColor(impact) }}>
             {impact}
           </span>
         )}
@@ -206,7 +279,7 @@ function RuleItem({ rule, slug }: { rule: SkillRule; slug: string }) {
               style={{ ...styles.editor, minHeight: "200px" }}
             />
           ) : (
-            <div style={styles.markdown}>
+            <div className="markdown-body">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{rule.body}</ReactMarkdown>
             </div>
           )}
@@ -216,27 +289,9 @@ function RuleItem({ rule, slug }: { rule: SkillRule; slug: string }) {
   );
 }
 
-function MetaItem({ label, value }: { label: string; value: string }) {
-  return (
-    <div style={styles.metaItem}>
-      <span style={styles.metaLabel}>{label}:</span>
-      <span style={styles.metaValue}>{value}</span>
-    </div>
-  );
-}
+// ── Usage section ─────────────────────────────────────────────────
 
-function Msg({ text }: { text: string }) {
-  return (
-    <div style={{ padding: "40px", fontFamily: "var(--font-mono)", fontSize: "13px", color: "var(--text-muted)" }}>
-      {text}
-    </div>
-  );
-}
-
-
-function UsageSection({ usage }: { usage: SkillUsageStats | undefined }) {
-  if (!usage) return null;
-
+function UsageContent({ usage }: { usage: SkillUsageStats }) {
   const formatDate = (iso: string) => {
     try {
       return new Date(iso).toLocaleDateString("en-US", {
@@ -250,24 +305,17 @@ function UsageSection({ usage }: { usage: SkillUsageStats | undefined }) {
   };
 
   return (
-    <div style={styles.section}>
-      <div style={styles.sectionTitle}>
-        USAGE
-        <span style={styles.usageHeader}>
-          {usage.count === 0
-            ? "never used"
-            : `${usage.count} ${usage.count === 1 ? "use" : "uses"} · last used ${formatDate(usage.lastUsed ?? "")}`}
-        </span>
-      </div>
-      {usage.count === 0 ? (
-        <p style={styles.usageEmpty}>no usage recorded in ~/.claude/projects</p>
-      ) : (
-        <div style={styles.invocationList}>
-          {usage.invocations.map((inv: SkillInvocation, i: number) => (
-            <InvocationItem key={i} inv={inv} />
-          ))}
-        </div>
+    <div>
+      {usage.lastUsed && (
+        <p style={styles.usageLastUsed}>
+          last used {formatDate(usage.lastUsed)}
+        </p>
       )}
+      <div style={styles.invocationList}>
+        {usage.invocations.map((inv: SkillInvocation, i: number) => (
+          <InvocationItem key={i} inv={inv} />
+        ))}
+      </div>
     </div>
   );
 }
@@ -292,9 +340,26 @@ function InvocationItem({ inv }: { inv: SkillInvocation }) {
         <span style={styles.invocationDate}>{date}</span>
         <span style={styles.invocationProject}>{inv.project}</span>
       </div>
-      {inv.prompt && (
-        <p style={styles.invocationPrompt}>{inv.prompt}</p>
-      )}
+      {inv.prompt && <p style={styles.invocationPrompt}>{inv.prompt}</p>}
+    </div>
+  );
+}
+
+// ── Small helpers ─────────────────────────────────────────────────
+
+function MetaItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div style={styles.metaItem}>
+      <span style={styles.metaLabel}>{label}:</span>
+      <span style={styles.metaValue}>{value}</span>
+    </div>
+  );
+}
+
+function Msg({ text }: { text: string }) {
+  return (
+    <div style={{ padding: "40px", fontFamily: "var(--font-mono)", fontSize: "13px", color: "var(--text-muted)" }}>
+      {text}
     </div>
   );
 }
@@ -306,6 +371,8 @@ function impactColor(impact: string): string {
   if (u === "MEDIUM") return "var(--text-primary)";
   return "var(--text-muted)";
 }
+
+// ── Styles ────────────────────────────────────────────────────────
 
 const styles = {
   page: { padding: "32px 40px", maxWidth: "900px" },
@@ -389,7 +456,7 @@ const styles = {
     padding: "12px 0",
     borderTop: "1px solid var(--border)",
     borderBottom: "1px solid var(--border)",
-    marginBottom: "24px",
+    marginBottom: "20px",
   },
   metaItem: { display: "flex", gap: "6px", alignItems: "baseline" },
   metaLabel: {
@@ -403,23 +470,54 @@ const styles = {
     fontSize: "11px",
     color: "var(--text-secondary)",
   },
-  section: { marginBottom: "32px" },
-  sectionTitle: {
+  // Collapsible section
+  collapsible: {
+    marginBottom: "4px",
+    border: "1px solid var(--border)",
+  },
+  collapsibleHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    padding: "10px 14px",
+    cursor: "pointer",
+    backgroundColor: "var(--bg-raised)",
+    userSelect: "none" as const,
+    transition: "background-color 150ms ease",
+  },
+  colToggle: {
+    fontFamily: "var(--font-mono)",
+    fontSize: "10px",
+    color: "var(--accent)",
+    flexShrink: 0,
+    width: "10px",
+  },
+  colTitle: {
     fontFamily: "var(--font-mono)",
     fontSize: "10px",
     color: "var(--text-muted)",
     letterSpacing: "0.1em",
-    marginBottom: "12px",
-    paddingBottom: "6px",
-    borderBottom: "1px solid var(--border)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
   },
-  markdown: {
-    fontSize: "13px",
-    lineHeight: 1.7,
-    color: "var(--text-primary)",
+  colBadge: {
+    fontFamily: "var(--font-mono)",
+    fontSize: "9px",
+    color: "var(--text-muted)",
+    padding: "1px 5px",
+    border: "1px solid var(--border)",
+    letterSpacing: "0.04em",
+  },
+  colSpacer: { flex: 1 },
+  colActions: { display: "flex", gap: "6px" },
+  collapsibleBody: {
+    padding: "16px 18px",
+    borderTop: "1px solid var(--border)",
+    backgroundColor: "var(--bg-surface)",
+  },
+  editorActions: {
+    display: "flex",
+    gap: "6px",
+    marginBottom: "10px",
+    justifyContent: "flex-end",
   },
   editor: {
     width: "100%",
@@ -430,9 +528,15 @@ const styles = {
     resize: "vertical" as const,
     border: "1px solid var(--border-strong)",
   },
+  // Rules
+  ruleList: {
+    display: "flex",
+    flexDirection: "column" as const,
+    gap: "0",
+    border: "1px solid var(--border)",
+  },
   rule: {
     borderBottom: "1px solid var(--border)",
-    marginBottom: "0",
   },
   ruleHeader: {
     display: "flex",
@@ -479,24 +583,12 @@ const styles = {
     marginBottom: "10px",
     justifyContent: "flex-end",
   },
-  refList: { display: "flex", gap: "8px", flexWrap: "wrap" as const },
-  refFile: {
+  // Usage
+  usageLastUsed: {
     fontFamily: "var(--font-mono)",
-    fontSize: "11px",
-    color: "var(--text-secondary)",
-    padding: "4px 8px",
-    border: "1px solid var(--border)",
-  },
-  usageHeader: {
-    fontWeight: 400,
+    fontSize: "10px",
     color: "var(--text-muted)",
-    fontSize: "9px",
-    letterSpacing: "0.05em",
-  },
-  usageEmpty: {
-    fontFamily: "var(--font-mono)",
-    fontSize: "11px",
-    color: "var(--text-muted)",
+    marginBottom: "10px",
   },
   invocationList: {
     display: "flex",
@@ -532,5 +624,14 @@ const styles = {
     color: "var(--text-secondary)",
     lineHeight: 1.5,
     margin: 0,
+  },
+  // References
+  refList: { display: "flex", gap: "8px", flexWrap: "wrap" as const },
+  refFile: {
+    fontFamily: "var(--font-mono)",
+    fontSize: "11px",
+    color: "var(--text-secondary)",
+    padding: "4px 8px",
+    border: "1px solid var(--border)",
   },
 };
