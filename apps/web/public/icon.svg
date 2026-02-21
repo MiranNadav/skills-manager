@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Dark background -->
+  <rect width="32" height="32" rx="4" fill="#0a0a0a"/>
+  <!-- Bulb glass -->
+  <path d="M16 4C10.48 4 6 8.48 6 14c0 3.8 1.98 7.12 4.96 9.02L11 26h10l0.04-2.98C24.02 21.12 26 17.8 26 14c0-5.52-4.48-10-10-10z" fill="#e8ff00"/>
+  <!-- Inner highlight -->
+  <path d="M14 7c-2.8 1.1-4.8 3.8-5 7" stroke="#fff" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.3"/>
+  <!-- Screw thread 1 -->
+  <rect x="11" y="26" width="10" height="2" rx="0.5" fill="#c0d400"/>
+  <!-- Screw thread 2 -->
+  <rect x="11.5" y="28.2" width="9" height="2" rx="0.5" fill="#9ab000"/>
+  <!-- Bottom cap -->
+  <path d="M13.5 30.2 L18.5 30.2 L18 32 L14 32 Z" fill="#7a8e00"/>
+</svg>
