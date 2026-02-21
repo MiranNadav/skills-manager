@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -16,6 +16,14 @@ export default function SkillPage() {
   const [summary, setSummary] = useState<string | null>(null);
   const [summarizing, setSummarizing] = useState(false);
   const saveMutation = useSaveSkill(slug ?? "");
+
+  // Reset transient state when navigating to a different skill
+  useEffect(() => {
+    setSummary(null);
+    setSummarizing(false);
+    setEditMode(false);
+    setEditContent("");
+  }, [slug]);
   const { data: usage } = useSkillUsage(slug ?? "");
 
   if (isLoading) return <Msg text="loading..." />;
