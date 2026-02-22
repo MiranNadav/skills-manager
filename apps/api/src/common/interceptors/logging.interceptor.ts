@@ -6,7 +6,7 @@ import type {
 import { Injectable, Inject } from "@nestjs/common";
 import type { Observable } from "rxjs";
 import { tap } from "rxjs/operators";
-import type { Logger } from "@internal/core/logger";
+import type { Logger } from "../../core/logger.js";
 import type { Request, Response } from "express";
 
 /** Injection token for the application logger instance. */

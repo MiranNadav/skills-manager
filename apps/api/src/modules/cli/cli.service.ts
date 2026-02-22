@@ -2,8 +2,8 @@ import { Injectable, Inject } from "@nestjs/common";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { homedir } from "node:os";
-import type { Logger } from "@internal/core/logger";
-import { ValidationError } from "@internal/core/errors";
+import type { Logger } from "../../core/logger.js";
+import { ValidationError } from "../../core/errors.js";
 import { APP_LOGGER } from "../../common/interceptors/logging.interceptor.js";
 
 const execFileAsync = promisify(execFile);

@@ -1,7 +1,7 @@
 import { Injectable, Inject } from "@nestjs/common";
 import { readdir, readFile, writeFile, stat } from "node:fs/promises";
 import { join, resolve, basename } from "node:path";
-import { NotFoundError } from "@internal/core/errors";
+import { NotFoundError } from "../../core/errors.js";
 import type { AppConfig } from "../../config.js";
 import { APP_CONFIG } from "../../config.js";
 

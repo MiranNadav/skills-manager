@@ -3,17 +3,17 @@
 ## Architecture
 
 pnpm monorepo with two apps:
-- `apps/api` — NestJS backend (port 3001), imports `@internal/core` via `file:` reference from showdown-infra
+- `apps/api` — NestJS backend (port 3001), fully self-contained
 - `apps/web` — Vite + React frontend (port 5173), proxies `/api/*` to backend
 
-## Key Rules (mirrors showdown-infra)
+## Key Rules
 
 - **ESM only**: `"type": "module"` in all package.json; relative imports MUST use `.js` extension
 - **TypeScript**: Strict mode, `NodeNext` module resolution, `verbatimModuleSyntax: true`
 - **No `any`**: Use `unknown` with Zod validation
-- **Config**: Always use `loadConfig(zodSchema)` from `@internal/core/config`; never raw `process.env`
-- **Logging**: Use `Logger` class from `@internal/core/logger`; wrap handlers in `runWithContext()`
-- **Errors**: Throw `AppError` subclasses; use `isOperationalError()` to distinguish in filter
+- **Config**: Use `loadConfig(zodSchema)` from `./core/config.js`; never raw `process.env`
+- **Logging**: Use `Logger` class from `./core/logger.js`; wrap handlers in `runWithContext()`
+- **Errors**: Throw `AppError` subclasses from `./core/errors.js`; use `isOperationalError()` in filter
 - **Testing**: Vitest (not Jest); colocated `.spec.ts` files
 
 ## File Extension Rule
@@ -24,10 +24,12 @@ import { foo } from "./bar.js";  // ✅
 import { foo } from "./bar";     // ❌
 ```
 
-## @internal/core Location
+## Core Utilities
 
-The package lives at: `../../../showdown-infra/packages/internal-core`
-It must be built before `pnpm install` here: run `pnpm -r build` in showdown-infra first.
+Config, logger, and error classes are inlined at `apps/api/src/core/`:
+- `core/config.ts` — `loadConfig(schema)` using dotenv + zod
+- `core/logger.ts` — `Logger`, `asyncLocalStorage`, `LogContext`, `runWithContext`
+- `core/errors.ts` — `AppError`, `NotFoundError`, `ValidationError`, `isOperationalError`
 
 ## Skills Filesystem
 

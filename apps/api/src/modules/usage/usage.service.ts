@@ -2,7 +2,7 @@ import { Injectable, Inject } from "@nestjs/common";
 import { readdir, readFile, stat, writeFile, mkdir } from "node:fs/promises";
 import { join, dirname } from "node:path";
 import { homedir } from "node:os";
-import type { Logger } from "@internal/core/logger";
+import type { Logger } from "../../core/logger.js";
 import { APP_LOGGER } from "../../common/interceptors/logging.interceptor.js";
 import { APP_CONFIG } from "../../config.js";
 import type { AppConfig } from "../../config.js";

@@ -2,7 +2,7 @@ import "reflect-metadata";
 import { NestFactory } from "@nestjs/core";
 import { ValidationPipe } from "@nestjs/common";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
-import { Logger } from "@internal/core/logger";
+import { Logger } from "./core/logger.js";
 import { AppModule } from "./app.module.js";
 import { config } from "./config.js";
 import { NestJSLoggerAdapter } from "./common/logger/nestjs-logger.adapter.js";

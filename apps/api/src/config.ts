@@ -1,4 +1,4 @@
-import { loadConfig } from "@internal/core/config";
+import { loadConfig } from "./core/config.js";
 import { z } from "zod";
 import { join } from "node:path";
 import { homedir } from "node:os";

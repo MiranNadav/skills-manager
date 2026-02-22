@@ -1,9 +1,9 @@
 import type { ExceptionFilter, ArgumentsHost } from "@nestjs/common";
 import { Catch, HttpException, HttpStatus, Inject } from "@nestjs/common";
 import type { Response, Request } from "express";
-import type { Logger } from "@internal/core/logger";
-import { isOperationalError } from "@internal/core/errors";
-import type { AppError } from "@internal/core/errors";
+import type { Logger } from "../../core/logger.js";
+import { isOperationalError } from "../../core/errors.js";
+import type { AppError } from "../../core/errors.js";
 import { APP_LOGGER } from "../interceptors/logging.interceptor.js";
 
 /**

@@ -1,5 +1,5 @@
 import { Injectable, Inject } from "@nestjs/common";
-import type { Logger } from "@internal/core/logger";
+import type { Logger } from "../../core/logger.js";
 import { APP_LOGGER } from "../../common/interceptors/logging.interceptor.js";
 import { AI_PROVIDER_TOKEN } from "./providers/ai-provider.interface.js";
 import type { AiProvider, AiCompletionOptions, AiCompletionResult } from "./providers/ai-provider.interface.js";

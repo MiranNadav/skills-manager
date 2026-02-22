@@ -1,5 +1,5 @@
 import { Global, Module } from "@nestjs/common";
-import { Logger } from "@internal/core/logger";
+import { Logger } from "./core/logger.js";
 import { config, APP_CONFIG } from "./config.js";
 import { APP_LOGGER } from "./common/interceptors/logging.interceptor.js";
 

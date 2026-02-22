@@ -5,10 +5,10 @@ import type {
 } from "@nestjs/common";
 import { Injectable } from "@nestjs/common";
 import { Observable } from "rxjs";
-import { asyncLocalStorage } from "@internal/core/logger";
+import { asyncLocalStorage } from "../../core/logger.js";
 import { v4 as uuidv4 } from "uuid";
 import type { Request } from "express";
-import type { LogContext } from "@internal/core/logger";
+import type { LogContext } from "../../core/logger.js";
 
 /**
  * Extracts correlation headers and wraps the request in an

@@ -1,5 +1,5 @@
 import type { LoggerService } from "@nestjs/common";
-import type { Logger as CoreLogger } from "@internal/core/logger";
+import type { Logger as CoreLogger } from "../../core/logger.js";
 
 /**
  * Bridges NestJS's LoggerService to @internal/core Logger so all
