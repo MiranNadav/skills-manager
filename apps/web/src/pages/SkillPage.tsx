@@ -15,12 +15,14 @@ export default function SkillPage() {
   const [editContent, setEditContent] = useState("");
   const [summary, setSummary] = useState<string | null>(null);
   const [summarizing, setSummarizing] = useState(false);
+  const [summaryError, setSummaryError] = useState<string | null>(null);
   const saveMutation = useSaveSkill(slug ?? "");
 
   // Reset transient state when navigating to a different skill
   useEffect(() => {
     setSummary(null);
     setSummarizing(false);
+    setSummaryError(null);
     setEditMode(false);
     setEditContent("");
   }, [slug]);
@@ -43,9 +45,12 @@ export default function SkillPage() {
   async function generateSummary() {
     if (!slug) return;
     setSummarizing(true);
+    setSummaryError(null);
     try {
       const result = await analysisApi.summarize(slug);
       setSummary(result.summary);
+    } catch {
+      setSummaryError("Couldn't generate summary. Try again.");
     } finally {
       setSummarizing(false);
     }
@@ -96,6 +101,12 @@ export default function SkillPage() {
         <div style={styles.summary}>
           <span style={styles.summaryLabel}>AI SUMMARY</span>
           <p style={styles.summaryText}>{summary}</p>
+        </div>
+      )}
+      {summaryError && (
+        <div style={styles.summaryError}>
+          <span style={styles.summaryErrorIcon}>!</span>
+          <span style={styles.summaryErrorText}>{summaryError}</span>
         </div>
       )}
 
@@ -456,6 +467,25 @@ const styles = {
     fontSize: "13px",
     color: "var(--text-primary)",
     lineHeight: 1.6,
+  },
+  summaryError: {
+    display: "flex",
+    alignItems: "baseline",
+    gap: "8px",
+    padding: "8px 14px",
+    marginBottom: "20px",
+    border: "1px solid rgba(255,183,77,0.2)",
+    backgroundColor: "rgba(255,183,77,0.04)",
+  },
+  summaryErrorIcon: {
+    fontFamily: "var(--font-mono)",
+    fontSize: "10px",
+    color: "var(--warning)",
+    flexShrink: 0,
+  },
+  summaryErrorText: {
+    fontSize: "12px",
+    color: "var(--text-muted)",
   },
   meta: {
     display: "flex",
