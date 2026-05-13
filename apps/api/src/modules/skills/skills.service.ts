@@ -1,6 +1,5 @@
 import { Injectable, Inject } from "@nestjs/common";
 import type { Logger } from "../../core/logger.js";
-import { NotFoundError } from "../../core/errors.js";
 import { APP_LOGGER } from "../../common/interceptors/logging.interceptor.js";
 import { SkillFileService } from "./skill-file.service.js";
 import { SkillParserService } from "./skill-parser.service.js";
