@@ -63,7 +63,7 @@ describe("ValidationError", () => {
   it("toProblemDetails includes validationErrors", () => {
     const err = new ValidationError("invalid", { name: ["required"] });
     const pd = err.toProblemDetails();
-    expect(pd.validationErrors).toEqual({ name: ["required"] });
+    expect(pd["validationErrors"]).toEqual({ name: ["required"] });
   });
 
   it("defaults validationErrors to empty object", () => {
