@@ -1,42 +1,41 @@
+<div align="center">
+
 # Skills Manager
 
-A local web UI for browsing, editing, and AI-analyzing your [Claude Code](https://claude.ai/claude-code) agent skills. Understand which skills you have installed, how often they're used, what prompts trigger them, and where your library has gaps or overlaps.
+**A local web UI for browsing, editing, and AI-analyzing your [Claude Code](https://claude.ai/claude-code) agent skills.**
 
----
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20-brightgreen?logo=node.js&logoColor=white)](https://nodejs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![NestJS](https://img.shields.io/badge/NestJS-10-e0234e?logo=nestjs&logoColor=white)](https://nestjs.com)
+[![React](https://img.shields.io/badge/React-18-61dafb?logo=react&logoColor=black)](https://react.dev)
+[![Vite](https://img.shields.io/badge/Vite-5-646cff?logo=vite&logoColor=white)](https://vitejs.dev)
 
-## Screenshots
+![Skills Manager Dashboard](docs/screenshots/dashboard.png)
 
-> _Add screenshots after running the app locally._
-
-| Dashboard | Skill Detail |
-|-----------|-------------|
-| ![Dashboard](docs/screenshots/dashboard.png) | ![Skill Detail](docs/screenshots/skill.png) |
-
-| Analysis | Install |
-|----------|---------|
-| ![Analysis](docs/screenshots/analysis.png) | ![Install](docs/screenshots/install.png) |
+</div>
 
 ---
 
 ## Features
 
 ### Skill Library
-- Browse all installed skills in a dashboard with live search and filter
-- See rule count, reference file count, and usage frequency per skill at a glance
+- Browse all installed skills with live search and filter
+- Rule count, reference file count, and usage frequency per skill at a glance
 - "Most used" and total skill count stats in the header
 
 ### Skill Detail
 - Collapsible sections for **SKILL.md**, **RULES**, **USAGE**, and **REFERENCES**
-- Full markdown rendering with proper heading hierarchy, code blocks, tables, and lists
+- Full markdown rendering with heading hierarchy, code blocks, tables, and lists
 - Edit SKILL.md and individual rule files inline — changes write directly to disk
 - Per-rule metadata: title, impact level (CRITICAL / HIGH / MEDIUM / LOW)
 - **AI Summary** — one-click summary generated via Claude or Gemini
 
 ### Usage Tracking
-- Automatically parses `~/.claude/projects/**/*.jsonl` (Claude Code conversation logs)
-- Shows how many times each skill was invoked, when it was last used, and which project triggered it
+- Parses `~/.claude/projects/**/*.jsonl` (Claude Code conversation logs)
+- Shows invocation count, last-used date, and which project triggered each skill
 - Captures the human prompt that caused Claude to invoke the skill
-- Incremental cache (`~/.agents/skills-manager-usage.json`) — only re-parses changed files on subsequent requests
+- Incremental cache (`~/.agents/skills-manager-usage.json`) — only re-parses changed files
 
 ### AI Analysis
 - **Duplicate Detection** — finds skills with overlapping purposes, scored high / medium / low
@@ -44,9 +43,8 @@ A local web UI for browsing, editing, and AI-analyzing your [Claude Code](https:
 
 ### Find & Install
 - Search the public skill registry via `npx skills find`
-- Results show the full `npx skills add owner/repo@skill` command per entry
 - One-click **use** button to pre-fill the install input
-- Check for updates and update all skills in one action
+- Check for and apply updates to all skills in one action
 
 ---
 
@@ -65,7 +63,7 @@ A local web UI for browsing, editing, and AI-analyzing your [Claude Code](https:
 
 - **Node.js** ≥ 20
 - **pnpm** ≥ 9 — `npm install -g pnpm`
-- **Claude Code** with skills installed at `~/.agents/skills/` (or a custom path)
+- **Claude Code** with skills installed at `~/.agents/skills/`
 - An **Anthropic API key** (or Gemini API key if you prefer Gemini)
 
 ---
@@ -104,33 +102,27 @@ ANTHROPIC_API_KEY=sk-ant-...
 ```
 
 ```bash
-# 4. Start both services in parallel
+# 4. Start both services
 pnpm dev
 ```
 
-- API: http://localhost:3001
-- Web UI: http://localhost:5173
-- Swagger docs: http://localhost:3001/api/docs
+| Service | URL |
+|---------|-----|
+| Web UI | http://localhost:5173 |
+| API | http://localhost:3001 |
+| Swagger | http://localhost:3001/api/docs |
 
 ---
 
 ## Development
 
 ```bash
-# API only
-pnpm dev:api
-
-# Frontend only
-pnpm dev:web
-
-# Type-check all packages
-pnpm typecheck
-
-# Run tests
-pnpm test
-
-# Build for production
-pnpm build
+pnpm dev          # api + web in parallel
+pnpm dev:api      # api only
+pnpm dev:web      # web only
+pnpm typecheck    # type-check all packages
+pnpm test         # run tests
+pnpm build        # production build
 ```
 
 ### Project Structure
@@ -158,7 +150,7 @@ skills-manager/
 
 ## Skills Directory
 
-Skills Manager reads skills from `~/.agents/skills/` by default. Each skill is a directory:
+Skills are read from `~/.agents/skills/` by default. Each skill is a directory:
 
 ```
 ~/.agents/skills/
@@ -179,6 +171,12 @@ Or use the **Install** tab in the UI.
 
 ---
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+---
+
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).
