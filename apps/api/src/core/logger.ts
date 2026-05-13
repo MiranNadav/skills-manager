@@ -95,10 +95,13 @@ export class Logger {
 
     const output = JSON.stringify(entry);
     if (level === "error" || level === "fatal") {
+      // eslint-disable-next-line no-console
       console.error(output);
     } else if (level === "warn") {
+      // eslint-disable-next-line no-console
       console.warn(output);
     } else {
+      // eslint-disable-next-line no-console
       console.log(output);
     }
   }
